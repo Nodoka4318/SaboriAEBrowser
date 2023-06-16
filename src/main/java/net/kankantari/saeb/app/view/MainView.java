@@ -1,5 +1,6 @@
 package net.kankantari.saeb.app.view;
 
+import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -7,6 +8,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import net.kankantari.saeb.SAEB;
+import net.kankantari.saeb.app.EnumEvent;
+import net.kankantari.saeb.app.MainApp;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainView {
     @FXML
@@ -36,7 +43,89 @@ public class MainView {
     @FXML
     private WebView subWebView;
 
+    private Timer timer;
+
+    private String lastPageUpdatedHTML = "";
+
+    private String lastRecordedHTML = "";
+
     private static final String AE3_URL = "https://ae3.nagoya";
+
+    public Button getBackButton() {
+        return backButton;
+    }
+
+    public void setBackButton(Button backButton) {
+        this.backButton = backButton;
+    }
+
+    public Button getForwardButton() {
+        return forwardButton;
+    }
+
+    public void setForwardButton(Button forwardButton) {
+        this.forwardButton = forwardButton;
+    }
+
+    public WebView getWebView() {
+        return webView;
+    }
+
+    public void setWebView(WebView webView) {
+        this.webView = webView;
+    }
+
+    public TextArea getOutputTextArea() {
+        return outputTextArea;
+    }
+
+    public void setOutputTextArea(TextArea outputTextArea) {
+        this.outputTextArea = outputTextArea;
+    }
+
+    public Button getSubWebViewBackButton() {
+        return subWebViewBackButton;
+    }
+
+    public void setSubWebViewBackButton(Button subWebViewBackButton) {
+        this.subWebViewBackButton = subWebViewBackButton;
+    }
+
+    public Button getSubWebViewForwardButton() {
+        return subWebViewForwardButton;
+    }
+
+    public void setSubWebViewForwardButton(Button subWebViewForwardButton) {
+        this.subWebViewForwardButton = subWebViewForwardButton;
+    }
+
+    public TextField getSubWebViewURLField() {
+        return subWebViewURLField;
+    }
+
+    public void setSubWebViewURLField(TextField subWebViewURLField) {
+        this.subWebViewURLField = subWebViewURLField;
+    }
+
+    public Button getSubWebViewGoButton() {
+        return subWebViewGoButton;
+    }
+
+    public void setSubWebViewGoButton(Button subWebViewGoButton) {
+        this.subWebViewGoButton = subWebViewGoButton;
+    }
+
+    public WebView getSubWebView() {
+        return subWebView;
+    }
+
+    public void setSubWebView(WebView subWebView) {
+        this.subWebView = subWebView;
+    }
+
+    public String getLastPageUpdatedHTML() {
+        return lastPageUpdatedHTML;
+    }
 
     public void initialize() {
         // button action
@@ -46,8 +135,6 @@ public class MainView {
         subWebViewForwardButton.setOnAction(e -> subWebViewGoForward());
         subWebViewGoButton.setOnAction(e -> loadSubWebView());
 
-
-        // Load the main web page
         WebEngine webEngine = webView.getEngine();
         webEngine.load(AE3_URL);
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
@@ -55,10 +142,39 @@ public class MainView {
                 onWebViewPageChanged();
             }
         });
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (MainApp.getMainStage().isShowing()) {
+                        onTick();
+                    } else {
+                        timer.cancel();
+                    }
+                });
+            }
+        }, 0, 20);
+    }
+
+    public String getCurrentHTML() {
+        var obj = webView.getEngine().executeScript("document.documentElement.outerHTML");
+        if (obj instanceof String src) {
+            return src;
+        }
+        return "";
     }
 
     private void onWebViewPageChanged() {
-        outputTextArea.setText(webView.getEngine().getLocation());
+        // outputTextArea.setText(webView.getEngine().getLocation());
+        SAEB.getFeatureManager().executeOnEvent(EnumEvent.PAGE_UPDATE, this);
+
+        var obj = webView.getEngine().executeScript("document.documentElement.outerHTML");
+        if (obj instanceof String src) {
+            lastPageUpdatedHTML = src;
+            lastRecordedHTML = src;
+        }
     }
 
     private void goBack() {
@@ -94,6 +210,27 @@ public class MainView {
         if (!url.isEmpty()) {
             WebEngine webEngine = subWebView.getEngine();
             webEngine.load(url);
+        }
+    }
+
+    public void setSubWebViewPage(String url) {
+        subWebView.getEngine().load(url);
+        subWebViewURLField.setText(url);
+    }
+
+    public void onTick() {
+        SAEB.getFeatureManager().executeOnEvent(EnumEvent.TICK, this);
+    }
+
+    public boolean isHTMLUpdated() {
+        var currentHTML = getCurrentHTML();
+
+        if (!lastRecordedHTML.equals(currentHTML)) {
+            lastRecordedHTML = currentHTML;
+
+            return true;
+        } else {
+            return false;
         }
     }
 }

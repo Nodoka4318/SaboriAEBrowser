@@ -12,8 +12,12 @@ import java.net.URL;
 import java.util.Objects;
 
 public class MainApp extends Application {
+    private static Stage mainStage;
+
     @Override
     public void start(Stage primaryStage) throws IOException {
+        mainStage = primaryStage;
+
         var classloader = Thread.currentThread().getContextClassLoader();
         var is = classloader.getResource("mainview.fxml");
 
@@ -24,5 +28,9 @@ public class MainApp extends Application {
         primaryStage.setTitle("Sabori AE Browser");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static Stage getMainStage() {
+        return mainStage;
     }
 }
