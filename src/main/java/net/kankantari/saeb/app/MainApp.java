@@ -4,12 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import net.kankantari.saeb.app.view.MainView;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Objects;
 
 public class MainApp extends Application {
     private static Stage mainStage;

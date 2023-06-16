@@ -31,6 +31,8 @@ dependencies {
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
+
+    implementation 'com.google.code.gson:gson:2.4'
 }
 
 javafx {

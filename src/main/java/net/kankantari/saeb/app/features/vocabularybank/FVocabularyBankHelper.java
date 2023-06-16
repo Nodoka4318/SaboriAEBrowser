@@ -3,7 +3,7 @@ package net.kankantari.saeb.app.features.vocabularybank;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.Feature;
 import net.kankantari.saeb.app.utils.WebUtil;
-import net.kankantari.saeb.app.view.MainView;
+import net.kankantari.saeb.app.views.MainView;
 
 public class FVocabularyBankHelper extends Feature {
     private static final String WEBLIO_URL_BASE = "https://ejje.weblio.jp/content/";
@@ -11,11 +11,6 @@ public class FVocabularyBankHelper extends Feature {
 
     public FVocabularyBankHelper() {
         super("VocabularyBankHelper");
-    }
-
-    @Override
-    public String getTitleKeyword() {
-        return "Vocabulary Bank";
     }
 
     @Override

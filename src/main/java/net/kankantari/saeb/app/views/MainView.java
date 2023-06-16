@@ -1,4 +1,4 @@
-package net.kankantari.saeb.app.view;
+package net.kankantari.saeb.app.views;
 
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -8,6 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import net.kankantari.saeb.Config;
 import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.MainApp;
@@ -16,6 +17,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainView {
+    private final Config conf = Config.getConfig();
+
     @FXML
     private Button backButton;
 
@@ -48,8 +51,6 @@ public class MainView {
     private String lastPageUpdatedHTML = "";
 
     private String lastRecordedHTML = "";
-
-    private static final String AE3_URL = "https://ae3.nagoya";
 
     public Button getBackButton() {
         return backButton;
@@ -135,8 +136,15 @@ public class MainView {
         subWebViewForwardButton.setOnAction(e -> subWebViewGoForward());
         subWebViewGoButton.setOnAction(e -> loadSubWebView());
 
+        subWebView.getEngine().setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
+        subWebView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (Worker.State.SUCCEEDED.equals(newValue)) {
+                onSubWebViewPageChanged();
+            }
+        });
+
         WebEngine webEngine = webView.getEngine();
-        webEngine.load(AE3_URL);
+        webEngine.load(conf.getAe3Url());
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 onWebViewPageChanged();
@@ -177,6 +185,10 @@ public class MainView {
         }
     }
 
+    private void onSubWebViewPageChanged() {
+        subWebViewURLField.setText(subWebView.getEngine().getLocation());
+    }
+
     private void goBack() {
         WebEngine webEngine = webView.getEngine();
         if (webEngine.getHistory().getCurrentIndex() > 0) {
@@ -207,7 +219,13 @@ public class MainView {
 
     private void loadSubWebView() {
         String url = subWebViewURLField.getText();
+
         if (!url.isEmpty()) {
+            if (!url.contains("://")) {
+                url = "http://" + url;
+                subWebViewURLField.setText(url);
+            }
+
             WebEngine webEngine = subWebView.getEngine();
             webEngine.load(url);
         }
