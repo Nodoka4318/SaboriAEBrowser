@@ -136,14 +136,15 @@ public class MainView {
         subWebViewForwardButton.setOnAction(e -> subWebViewGoForward());
         subWebViewGoButton.setOnAction(e -> loadSubWebView());
 
-        subWebView.getEngine().setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
-        subWebView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+        var subWebEngine = subWebView.getEngine();
+        subWebEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
+        subWebEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 onSubWebViewPageChanged();
             }
         });
 
-        WebEngine webEngine = webView.getEngine();
+        var webEngine = webView.getEngine();
         webEngine.load(conf.getAe3Url());
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
