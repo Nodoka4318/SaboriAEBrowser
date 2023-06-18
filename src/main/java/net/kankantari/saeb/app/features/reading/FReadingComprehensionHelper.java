@@ -8,6 +8,7 @@ import net.kankantari.saeb.app.views.MainView;
 public class FReadingComprehensionHelper extends Feature {
     private static final String BOX_CLASS_RETRIEVE = "document.getElementsByClassName('ReadingCombinationQuestionView_PC__combinationQuestion___dyQsz')[0].innerHTML";
     private String lastSrc = "";
+    private boolean loaded = false;
 
     public FReadingComprehensionHelper() {
         super("ReadingComprehensionHelper");
@@ -18,6 +19,8 @@ public class FReadingComprehensionHelper extends Feature {
     public void onEvent(EnumEvent eventId, MainView view) {
         if (eventId == EnumEvent.TICK) {
             onTick(view);
+        } else if (eventId == EnumEvent.PAGE_UPDATE) {
+            onPageUpdated();
         }
     }
 
@@ -40,7 +43,12 @@ public class FReadingComprehensionHelper extends Feature {
                         .replaceAll("button", "p");
 
                 view.getSubWebView().getEngine().loadContent(src);
+                loaded = true;
             }
         }
+    }
+
+    private void onPageUpdated() {
+        loaded = false;
     }
 }
