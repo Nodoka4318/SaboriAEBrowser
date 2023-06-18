@@ -3,11 +3,12 @@ package net.kankantari.saeb.app.views;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import net.kankantari.saeb.Config;
 import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
@@ -137,7 +138,7 @@ public class MainView {
         subWebViewGoButton.setOnAction(e -> loadSubWebView());
 
         var subWebEngine = subWebView.getEngine();
-        subWebEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
+        // subWebEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
         subWebEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 onSubWebViewPageChanged();
@@ -145,11 +146,24 @@ public class MainView {
         });
 
         var webEngine = webView.getEngine();
-        webEngine.load(conf.getAe3Url());
+
+        if (conf.getAe3Url() == "https://ae3.example.com") {
+            webEngine.loadContent("コンフィグが未設定です。<br>./saeb/config.jsonを編集してください。");
+        } else {
+            webEngine.load(conf.getAe3Url());
+        }
+
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 onWebViewPageChanged();
             }
+        });
+
+        webEngine.setOnAlert((event) -> {
+            var alert = new Dialog<>();
+            alert.getDialogPane().setContentText(event.getData());
+            alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+            alert.showAndWait();
         });
 
         timer = new Timer();
