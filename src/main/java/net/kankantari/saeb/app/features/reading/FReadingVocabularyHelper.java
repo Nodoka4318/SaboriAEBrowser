@@ -24,6 +24,10 @@ public class FReadingVocabularyHelper extends Feature {
     }
 
     private void onTick(MainView view) {
+        if (!view.isHTMLUpdated()) {
+            return;
+        }
+
         var webEngine = view.getWebView().getEngine();
 
         if (WebUtil.getPageTitle(webEngine).equals("Academic Express3")) {
@@ -61,7 +65,7 @@ public class FReadingVocabularyHelper extends Feature {
                 var words = String.join("++", ind).split("\\+\\+");
                 StringBuilder output = new StringBuilder();
                 for (var w : words) {
-                    if (w.length() < 30) {
+                    if (w.length() > 0 && w.length() < 30) {
                         output.append(w).append(", ");
                     }
                 }

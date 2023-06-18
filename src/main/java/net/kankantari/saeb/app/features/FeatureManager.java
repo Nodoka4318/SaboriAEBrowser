@@ -2,6 +2,7 @@ package net.kankantari.saeb.app.features;
 
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.autologin.FLoginHelper;
+import net.kankantari.saeb.app.features.reading.FReadingComprehensionHelper;
 import net.kankantari.saeb.app.features.reading.FReadingPassageRetriever;
 import net.kankantari.saeb.app.features.reading.FReadingVocabularyHelper;
 import net.kankantari.saeb.app.features.vocabularybank.FVocabularyBankHelper;
@@ -19,11 +20,17 @@ public class FeatureManager {
         featureList.add(new FLoginHelper());
         featureList.add(new FReadingPassageRetriever());
         featureList.add(new FReadingVocabularyHelper());
+        featureList.add(new FReadingComprehensionHelper());
     }
 
     public void executeOnEvent(EnumEvent eventId, MainView mainView) {
         for (var f : featureList) {
-            f.onEvent(eventId, mainView);
+            try {
+                f.onEvent(eventId, mainView);
+            } catch (Exception e) {
+
+            }
         }
+        MainView.updateLastRecordedHTML(mainView);
     }
 }

@@ -46,11 +46,9 @@ public class FReadingPassageRetriever extends Feature {
     }
 
     private void onTick(MainView view) {
-        /*
         if (!view.isHTMLUpdated()) {
             return;
         }
-         */
 
         var webEngine = view.getWebView().getEngine();
 

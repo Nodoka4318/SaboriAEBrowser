@@ -51,7 +51,7 @@ public class MainView {
 
     private String lastPageUpdatedHTML = "";
 
-    private String lastRecordedHTML = "";
+    private static String lastRecordedHTML = "";
 
     public Button getBackButton() {
         return backButton;
@@ -256,14 +256,14 @@ public class MainView {
     }
 
     public boolean isHTMLUpdated() {
-        var currentHTML = getCurrentHTML();
-
-        if (!lastRecordedHTML.equals(currentHTML)) {
-            lastRecordedHTML = currentHTML;
-
+        if (!lastRecordedHTML.equals(getCurrentHTML())) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public static void updateLastRecordedHTML(MainView view) {
+        lastRecordedHTML = view.getCurrentHTML();
     }
 }
