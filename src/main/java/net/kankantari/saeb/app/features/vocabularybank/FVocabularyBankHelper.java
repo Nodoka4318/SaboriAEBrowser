@@ -15,8 +15,8 @@ public class FVocabularyBankHelper extends Feature {
 
     @Override
     public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.TICK) {
-            onTick(view);
+        if (eventId == EnumEvent.HTML_UPDATED) {
+            onHTMLUpdated(view);
         }
     }
 
@@ -24,11 +24,7 @@ public class FVocabularyBankHelper extends Feature {
         return WEBLIO_URL_BASE + word;
     }
 
-    private void onTick(MainView view) {
-        if (!view.isHTMLUpdated()) {
-            return;
-        }
-
+    private void onHTMLUpdated(MainView view) {
         var webEngine = view.getWebView().getEngine();
         if (WebUtil.getPageTitle(webEngine).contains("Vocabulary Bank")) {
                 /*

@@ -3,12 +3,9 @@ package net.kankantari.saeb.app.views;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 import net.kankantari.saeb.Config;
 import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
@@ -52,6 +49,8 @@ public class MainView {
     private String lastPageUpdatedHTML = "";
 
     private static String lastRecordedHTML = "";
+
+    public static String lastRecordedLocation = "";
 
     public Button getBackButton() {
         return backButton;
@@ -191,7 +190,7 @@ public class MainView {
 
     private void onWebViewPageChanged() {
         // outputTextArea.setText(webView.getEngine().getLocation());
-        SAEB.getFeatureManager().executeOnEvent(EnumEvent.PAGE_UPDATE, this);
+        SAEB.getFeatureManager().executeOnEvent(EnumEvent.PAGE_UPDATED, this);
 
         var obj = webView.getEngine().executeScript("document.documentElement.outerHTML");
         if (obj instanceof String src) {
@@ -253,17 +252,29 @@ public class MainView {
 
     public void onTick() {
         SAEB.getFeatureManager().executeOnEvent(EnumEvent.TICK, this);
+
+        if (isHTMLUpdated()) {
+            SAEB.getFeatureManager().executeOnEvent(EnumEvent.HTML_UPDATED, this);
+        }
+
+        if (isLocationUpdated()) {
+            SAEB.getFeatureManager().executeOnEvent(EnumEvent.LOCATION_CHANGED, this);
+        }
     }
 
     public boolean isHTMLUpdated() {
-        if (!lastRecordedHTML.equals(getCurrentHTML())) {
-            return true;
-        } else {
-            return false;
-        }
+        return !lastRecordedHTML.equals(getCurrentHTML());
+    }
+
+    public boolean isLocationUpdated() {
+        return !lastRecordedLocation.equals(getWebView().getEngine().getLocation());
     }
 
     public static void updateLastRecordedHTML(MainView view) {
         lastRecordedHTML = view.getCurrentHTML();
+    }
+
+    public static void updateLastRecordedLocation(MainView view) {
+        lastRecordedLocation = view.getWebView().getEngine().getLocation();
     }
 }

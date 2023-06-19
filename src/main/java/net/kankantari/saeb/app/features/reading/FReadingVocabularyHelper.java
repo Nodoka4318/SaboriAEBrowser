@@ -6,8 +6,6 @@ import net.kankantari.saeb.app.utils.WebUtil;
 import net.kankantari.saeb.app.views.MainView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class FReadingVocabularyHelper extends Feature {
     private String last = "";
@@ -18,16 +16,12 @@ public class FReadingVocabularyHelper extends Feature {
 
     @Override
     public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.TICK) {
-            onTick(view);
+        if (eventId == EnumEvent.HTML_UPDATED) {
+            onHTMLUpdated(view);
         }
     }
 
-    private void onTick(MainView view) {
-        if (!view.isHTMLUpdated()) {
-            return;
-        }
-
+    private void onHTMLUpdated(MainView view) {
         var webEngine = view.getWebView().getEngine();
 
         if (WebUtil.getPageTitle(webEngine).equals("Academic Express3")) {

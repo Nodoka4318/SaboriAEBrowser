@@ -17,18 +17,14 @@ public class FReadingComprehensionHelper extends Feature {
 
     @Override
     public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.TICK) {
-            onTick(view);
-        } else if (eventId == EnumEvent.PAGE_UPDATE) {
-            onPageUpdated();
+        if (eventId == EnumEvent.HTML_UPDATED) {
+            onHTMLUpdated(view);
+        } else if (eventId == EnumEvent.LOCATION_CHANGED) {
+            onLocationChanged();
         }
     }
 
-    private void onTick(MainView view) {
-        if (!view.isHTMLUpdated()) {
-            return;
-        }
-
+    private void onHTMLUpdated(MainView view) {
         var webEngine = view.getWebView().getEngine();
 
         if (WebUtil.getPageTitle(webEngine).equals("Academic Express3")) {
@@ -48,7 +44,7 @@ public class FReadingComprehensionHelper extends Feature {
         }
     }
 
-    private void onPageUpdated() {
+    private void onLocationChanged() {
         loaded = false;
     }
 }

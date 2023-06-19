@@ -31,6 +31,13 @@ public class FeatureManager {
 
             }
         }
-        MainView.updateLastRecordedHTML(mainView);
+
+        if (eventId == EnumEvent.HTML_UPDATED) {
+            MainView.updateLastRecordedHTML(mainView);
+        }
+
+        if (eventId == EnumEvent.LOCATION_CHANGED) {
+            MainView.updateLastRecordedLocation(mainView);
+        }
     }
 }
