@@ -1,9 +1,11 @@
 package net.kankantari.saeb.app.features.vocabularybank;
 
+import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.Feature;
 import net.kankantari.saeb.app.utils.WebUtil;
 import net.kankantari.saeb.app.views.MainView;
+import net.kankantari.saeb.exceptions.SAEBClassMapNotFoundException;
 
 public class FVocabularyBankHelper extends Feature {
     private static final String WEBLIO_URL_BASE = "https://ejje.weblio.jp/content/";
@@ -14,9 +16,9 @@ public class FVocabularyBankHelper extends Feature {
     }
 
     @Override
-    public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.HTML_UPDATED) {
-            onHTMLUpdated(view);
+    public void onEvent(EnumEvent eventId, MainView view) throws SAEBClassMapNotFoundException {
+        switch (eventId) {
+            case HTML_UPDATED -> onHTMLUpdated(view);
         }
     }
 
@@ -24,7 +26,7 @@ public class FVocabularyBankHelper extends Feature {
         return WEBLIO_URL_BASE + word;
     }
 
-    private void onHTMLUpdated(MainView view) {
+    private void onHTMLUpdated(MainView view) throws SAEBClassMapNotFoundException {
         var webEngine = view.getWebView().getEngine();
         if (WebUtil.getPageTitle(webEngine).contains("Vocabulary Bank")) {
                 /*
@@ -32,7 +34,9 @@ public class FVocabularyBankHelper extends Feature {
                 view.setSubWebViewPage(getWeblioPage(word));
                 */
 
-            var obj = webEngine.executeScript("document.getElementsByClassName('MultipleChoiceQuestionBuilder__question___3Xy0n lang-ja')[0].innerHTML;");
+            var boxClass = SAEB.getMapping().get("VocabularyBankWordBox");
+
+            var obj = WebUtil.getFirstClassContent(webEngine, boxClass);
             if (obj instanceof String word) {
                 if (!lastWord.equals(word)) {
                     lastWord = word;

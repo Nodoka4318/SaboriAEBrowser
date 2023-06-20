@@ -1,12 +1,13 @@
 package net.kankantari.saeb.app.features;
 
 import net.kankantari.saeb.app.EnumEvent;
-import net.kankantari.saeb.app.features.autologin.FLoginHelper;
+import net.kankantari.saeb.app.features.login.FLoginHelper;
 import net.kankantari.saeb.app.features.reading.FReadingComprehensionHelper;
 import net.kankantari.saeb.app.features.reading.FReadingPassageRetriever;
 import net.kankantari.saeb.app.features.reading.FReadingVocabularyHelper;
 import net.kankantari.saeb.app.features.vocabularybank.FVocabularyBankHelper;
 import net.kankantari.saeb.app.views.MainView;
+import net.kankantari.saeb.exceptions.SAEBException;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,9 @@ public class FeatureManager {
         for (var f : featureList) {
             try {
                 f.onEvent(eventId, mainView);
-            } catch (Exception e) {
+            } catch (SAEBException e) {
+                e.printStackTrace();
+            } catch (Exception ignored) {
 
             }
         }

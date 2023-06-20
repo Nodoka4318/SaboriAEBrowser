@@ -1,9 +1,11 @@
 package net.kankantari.saeb.app.features.reading;
 
+import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.Feature;
 import net.kankantari.saeb.app.utils.WebUtil;
 import net.kankantari.saeb.app.views.MainView;
+import net.kankantari.saeb.exceptions.SAEBClassMapNotFoundException;
 
 import java.util.ArrayList;
 
@@ -15,17 +17,19 @@ public class FReadingVocabularyHelper extends Feature {
     }
 
     @Override
-    public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.HTML_UPDATED) {
-            onHTMLUpdated(view);
+    public void onEvent(EnumEvent eventId, MainView view) throws SAEBClassMapNotFoundException {
+        switch (eventId) {
+            case HTML_UPDATED -> onHTMLUpdated(view);
         }
     }
 
-    private void onHTMLUpdated(MainView view) {
+    private void onHTMLUpdated(MainView view) throws SAEBClassMapNotFoundException {
         var webEngine = view.getWebView().getEngine();
 
         if (WebUtil.getPageTitle(webEngine).equals("Academic Express3")) {
-            var obj = webEngine.executeScript("document.getElementsByClassName('MatchingQuestionBuilder__question___2kNpE')[0].innerHTML");
+            var boxClass = SAEB.getMapping().get("ReadingVocabularyPassageBox");
+
+            var obj = WebUtil.getFirstClassContent(webEngine, boxClass);
             if (obj instanceof String src) {
                 if (!FReadingPassageRetriever.isPassageSet()) {
                     view.getOutputTextArea().setText("まだ本文が読み込まれていません。先にChallenge Testを受講してください。");

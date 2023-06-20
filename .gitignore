@@ -68,3 +68,5 @@ atlassian-ide-plugin.xml
 !gradle/wrapper/gradle-wrapper.jar
 
 /saeb
+
+/src/test/java/saeb

@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import net.kankantari.saeb.app.MainApp;
 import net.kankantari.saeb.app.features.FeatureManager;
 import net.kankantari.saeb.app.features.reading.FReadingPassageRetriever;
+import net.kankantari.saeb.exceptions.SAEBException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 public class SAEB {
     private static FeatureManager featureManager;
     private static Config config;
+    private static AEClassMap mapping;
 
     public static void main(String[] args) {
         featureManager = new FeatureManager();
@@ -38,10 +40,21 @@ public class SAEB {
 
         Config.setConfig(config);
 
+        try {
+            mapping = AEClassMap.loadMapping();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
+
         Application.launch(MainApp.class);
     }
 
     public static FeatureManager getFeatureManager() {
         return featureManager;
+    }
+
+    public static AEClassMap getMapping() {
+        return mapping;
     }
 }

@@ -9,14 +9,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Config {
-    private static final String CONFIG_DIRECTORY_PATH = "./saeb";
+    public static final String CONFIG_DIRECTORY_PATH = "./saeb";
     private static final String CONFIG_FILE_PATH = CONFIG_DIRECTORY_PATH + "/config.json";
+
+    public static final String DEFAULT_AE3_URL = "https://ae3.example.com";
+    public static final String DEFAULT_MAPPING_FILE = "mapping.txt";
+    public static final String DEFAULT_ID = "your_id";
+    public static final String DEFAULT_PASSWORD = "your_password";
+    public static final boolean DEFAULT_AUTO_LOGIN = false;
 
     private static Config config;
 
     @SerializedName("ae3Url")
     @Expose
     private String ae3Url;
+    @SerializedName("mappingFile")
+    @Expose
+    private String mappingFile;
     @SerializedName("autoLogin")
     @Expose
     private boolean autoLogin;
@@ -33,6 +42,14 @@ public class Config {
 
     public void setAe3Url(String ae3Url) {
         this.ae3Url = ae3Url;
+    }
+
+    public String getMappingFile() {
+        return mappingFile;
+    }
+
+    public void setMappingFile(String mappingFile) {
+        this.mappingFile = mappingFile;
     }
 
     public boolean isAutoLogin() {
@@ -99,10 +116,11 @@ public class Config {
 
     public static Config getDefaultConfig() {
         var conf = new Config();
-        conf.setAe3Url("https://ae3.example.com");
-        conf.setId("your_id");
-        conf.setPassword("your_password");
-        conf.setAutoLogin(false);
+        conf.setAe3Url(DEFAULT_AE3_URL);
+        conf.setMappingFile(DEFAULT_MAPPING_FILE);
+        conf.setId(DEFAULT_ID);
+        conf.setPassword(DEFAULT_PASSWORD);
+        conf.setAutoLogin(DEFAULT_AUTO_LOGIN);
 
         return conf;
     }

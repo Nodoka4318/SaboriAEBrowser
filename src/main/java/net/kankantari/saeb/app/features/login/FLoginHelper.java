@@ -1,4 +1,4 @@
-package net.kankantari.saeb.app.features.autologin;
+package net.kankantari.saeb.app.features.login;
 
 import net.kankantari.saeb.Config;
 import net.kankantari.saeb.app.EnumEvent;
@@ -14,8 +14,8 @@ public class FLoginHelper extends Feature {
 
     @Override
     public void onEvent(EnumEvent eventId, MainView view) {
-        if (eventId == EnumEvent.TICK) {
-            onTick(view);
+        switch (eventId) {
+            case TICK -> onTick(view);
         }
     }
 
