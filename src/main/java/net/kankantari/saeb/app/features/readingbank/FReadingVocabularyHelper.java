@@ -1,11 +1,11 @@
-package net.kankantari.saeb.app.features.reading;
+package net.kankantari.saeb.app.features.readingbank;
 
 import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.Feature;
 import net.kankantari.saeb.app.utils.WebUtil;
 import net.kankantari.saeb.app.views.MainView;
-import net.kankantari.saeb.exceptions.SAEBClassMapNotFoundException;
+import net.kankantari.saeb.exceptions.SAEBMappingNotFoundException;
 
 import java.util.ArrayList;
 
@@ -17,17 +17,18 @@ public class FReadingVocabularyHelper extends Feature {
     }
 
     @Override
-    public void onEvent(EnumEvent eventId, MainView view) throws SAEBClassMapNotFoundException {
+    public void onEvent(EnumEvent eventId, MainView view) throws SAEBMappingNotFoundException {
         switch (eventId) {
             case HTML_UPDATED -> onHTMLUpdated(view);
         }
     }
 
-    private void onHTMLUpdated(MainView view) throws SAEBClassMapNotFoundException {
+    private void onHTMLUpdated(MainView view) throws SAEBMappingNotFoundException {
         var webEngine = view.getWebView().getEngine();
+        var map = SAEB.getMapping();
 
-        if (WebUtil.getPageTitle(webEngine).equals("Academic Express3")) {
-            var boxClass = SAEB.getMapping().get("ReadingVocabularyPassageBox");
+        if (WebUtil.getPageTitle(webEngine).equals(map.get("ReadingVocabularyPageTitle"))) {
+            var boxClass = map.get("ReadingVocabularyPassageBox");
 
             var obj = WebUtil.getFirstClassContent(webEngine, boxClass);
             if (obj instanceof String src) {
@@ -70,7 +71,7 @@ public class FReadingVocabularyHelper extends Feature {
 
                 view.getOutputTextArea().setText(output.toString());
 
-                FReadingPassageRetriever.togglePassageUpdated();
+                // FReadingPassageRetriever.togglePassageUpdated(); ??
             }
         }
     }

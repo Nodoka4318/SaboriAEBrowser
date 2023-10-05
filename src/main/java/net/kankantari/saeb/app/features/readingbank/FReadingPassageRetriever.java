@@ -1,11 +1,11 @@
-package net.kankantari.saeb.app.features.reading;
+package net.kankantari.saeb.app.features.readingbank;
 
 import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.features.Feature;
 import net.kankantari.saeb.app.utils.WebUtil;
 import net.kankantari.saeb.app.views.MainView;
-import net.kankantari.saeb.exceptions.SAEBClassMapNotFoundException;
+import net.kankantari.saeb.exceptions.SAEBMappingNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,25 +41,26 @@ public class FReadingPassageRetriever extends Feature {
     }
 
     @Override
-    public void onEvent(EnumEvent eventId, MainView view) throws SAEBClassMapNotFoundException {
+    public void onEvent(EnumEvent eventId, MainView view) throws SAEBMappingNotFoundException {
         switch (eventId) {
             case HTML_UPDATED -> onHTMLUpdated(view);
             case LOCATION_CHANGED -> onLocationChanged();
         }
     }
 
-    private void onHTMLUpdated(MainView view) throws SAEBClassMapNotFoundException {
+    private void onHTMLUpdated(MainView view) throws SAEBMappingNotFoundException {
         var webEngine = view.getWebView().getEngine();
+        var map = SAEB.getMapping();
 
         // retrieve passage
-        if (WebUtil.getPageTitle(webEngine).contains("Reading Bank")) {
-            var boxClass = SAEB.getMapping().get("ReadingPassageBox");
+        if (WebUtil.getPageTitle(webEngine).equals(map.get("ReadingSkimmingPageTitle"))) {
+            var boxClass = map.get("ReadingPassageBox");
 
             var obj = WebUtil.getFirstClassContent(webEngine, boxClass);
             if (obj instanceof String src) {
                 passages = Arrays.stream(src.split("<br><br>")).toList();
                 var j = String.join("\n\n", passages);
-                if (!j.equals(passage)) {
+                if (!passageUpdated && !j.equals(passage)) {
                     passage = j;
                     view.getSubWebView().getEngine().loadContent(src);
                     passageSet = true;

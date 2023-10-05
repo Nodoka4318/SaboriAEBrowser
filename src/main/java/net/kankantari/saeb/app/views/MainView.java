@@ -11,6 +11,8 @@ import net.kankantari.saeb.SAEB;
 import net.kankantari.saeb.app.EnumEvent;
 import net.kankantari.saeb.app.MainApp;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -159,10 +161,7 @@ public class MainView {
         });
 
         webEngine.setOnAlert((event) -> {
-            var alert = new Dialog<>();
-            alert.getDialogPane().setContentText(event.getData());
-            alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            alert.showAndWait();
+            showDialog(event.getData(), ButtonType.OK);
         });
 
         timer = new Timer();
@@ -276,5 +275,13 @@ public class MainView {
 
     public static void updateLastRecordedLocation(MainView view) {
         lastRecordedLocation = view.getWebView().getEngine().getLocation();
+    }
+
+    public static Optional<Object> showDialog(String message, ButtonType buttonType) {
+        var alert = new Dialog<>();
+        alert.getDialogPane().setContentText(message);
+        alert.getDialogPane().setHeaderText("SAEB");
+        alert.getDialogPane().getButtonTypes().add(buttonType);
+        return alert.showAndWait();
     }
 }

@@ -1,6 +1,6 @@
 package net.kankantari.saeb;
 
-import net.kankantari.saeb.exceptions.SAEBClassMapNotFoundException;
+import net.kankantari.saeb.exceptions.SAEBMappingNotFoundException;
 import net.kankantari.saeb.exceptions.SAEBFileNotFoundException;
 
 import java.io.File;
@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
-public class AEClassMap {
+public class AEMap {
     private static class MapElem {
         public String Key;
-        public String ClassName;
+        public String Value;
 
-        private MapElem(String key, String className) {
+        private MapElem(String key, String value) {
             Key = key;
-            ClassName = className;
+            Value = value;
         }
 
         public static MapElem fromString(String str) {
@@ -26,27 +26,27 @@ public class AEClassMap {
         }
 
         public String getStr() {
-            return Key + "::" + ClassName;
+            return Key + "::" + Value;
         }
     }
 
     private List<MapElem> map;
 
-    private AEClassMap(List<MapElem> map) {
+    private AEMap(List<MapElem> map) {
         this.map = map;
     }
 
-    public String get(String key) throws SAEBClassMapNotFoundException {
+    public String get(String key) throws SAEBMappingNotFoundException {
         for (var m : map) {
-            if (m.Key.equals(key)) {
-                return m.ClassName;
+            if (m.Key.toLowerCase(Locale.ROOT).equals(key.toLowerCase(Locale.ROOT))) {
+                return m.Value;
             }
         }
 
-        throw new SAEBClassMapNotFoundException(key);
+        throw new SAEBMappingNotFoundException(key);
     }
 
-    public static AEClassMap loadMapping() throws SAEBFileNotFoundException, IOException {
+    public static AEMap loadMapping() throws SAEBFileNotFoundException, IOException {
         var file = new File(Config.CONFIG_DIRECTORY_PATH + "/" + Config.getConfig().getMappingFile());
 
         if (!file.exists()) {
@@ -61,7 +61,7 @@ public class AEClassMap {
                 }
             }
 
-            return new AEClassMap(mapping);
+            return new AEMap(mapping);
         }
     }
 }
